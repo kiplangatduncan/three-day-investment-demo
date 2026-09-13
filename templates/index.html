@@ -239,3 +239,17 @@
 
             <p class="empty">
                 No demo investments
+<p>
+    <strong>Investment:</strong>
+    ${{ "%.2f"|format(investment["amount"]) }}
+</p>
+
+<p>
+    <strong>Expected Demo Profit:</strong>
+    ${{ "%.2f"|format(investment["expected_profit"]) }}
+</p>
+
+<p>
+    <strong>Demo Total:</strong>
+    ${{ "%.2f"|format(investment["total_return"]) }}
+</p>
