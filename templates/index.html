@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Investment Demo</title>
+
+    <title>Three Day Investment Demo</title>
 
     <style>
         * {
@@ -20,13 +21,13 @@
         header {
             background: #111827;
             color: white;
-            padding: 22px 15px;
+            padding: 25px 15px;
             text-align: center;
         }
 
         header h1 {
             margin: 0;
-            font-size: 27px;
+            font-size: 28px;
         }
 
         header p {
@@ -55,13 +56,13 @@
         label {
             display: block;
             margin-top: 15px;
-            margin-bottom: 6px;
+            margin-bottom: 7px;
             font-weight: bold;
         }
 
         input {
             width: 100%;
-            padding: 13px;
+            padding: 14px;
             border: 1px solid #d1d5db;
             border-radius: 7px;
             font-size: 16px;
@@ -87,7 +88,7 @@
         .notice {
             background: #fff7ed;
             border-left: 5px solid #f97316;
-            padding: 14px;
+            padding: 15px;
             margin-bottom: 20px;
             line-height: 1.5;
         }
@@ -95,20 +96,28 @@
         .flash {
             background: #dcfce7;
             color: #166534;
-            padding: 13px;
+            padding: 14px;
             border-radius: 7px;
             margin-bottom: 15px;
         }
 
         .investment {
             border: 1px solid #e5e7eb;
-            padding: 15px;
+            padding: 16px;
             border-radius: 8px;
             margin-top: 12px;
         }
 
-        .investment strong {
-            color: #111827;
+        .investment p {
+            margin: 8px 0;
+        }
+
+        .investment a {
+            display: inline-block;
+            margin-top: 8px;
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: bold;
         }
 
         .links {
@@ -120,11 +129,17 @@
             color: #2563eb;
             text-decoration: none;
             margin: 0 8px;
+            font-weight: bold;
         }
 
         .empty {
             color: #6b7280;
             text-align: center;
+            padding: 15px;
+        }
+
+        .currency {
+            color: #111827;
         }
     </style>
 </head>
@@ -132,51 +147,67 @@
 <body>
 
 <header>
-    <h1>Investment Demo</h1>
-    <p>Demo investment tracking system</p>
+    <h1>Three Day Investment Demo</h1>
+    <p>USD Investment Tracking System</p>
 </header>
 
 <div class="container">
 
     <div class="notice">
         <strong>Demo only:</strong>
-        This website is a demonstration of an investment-record system.
-        It does not accept real money and does not guarantee real profits.
+        This website is a simulated investment-record system.
+        It does not accept real money and does not guarantee financial returns.
     </div>
 
+    <!-- FLASH MESSAGES -->
+
     {% with messages = get_flashed_messages() %}
+
         {% if messages %}
+
             {% for message in messages %}
+
                 <div class="flash">
                     {{ message }}
                 </div>
+
             {% endfor %}
+
         {% endif %}
+
     {% endwith %}
 
+
+    <!-- CREATE INVESTMENT -->
+
     <div class="card">
+
         <h2>Create Demo Investment</h2>
 
         <form method="POST" action="{{ url_for('invest') }}">
 
-            <label for="name">Name</label>
+            <label for="name">
+                Name
+            </label>
 
             <input
                 type="text"
                 id="name"
                 name="name"
-                placeholder="Enter name"
+                placeholder="Enter your name"
                 required
             >
 
-            <label for="amount">Demo Amount</label>
+            <label for="amount">
+                Investment Amount (USD)
+            </label>
 
             <input
                 type="number"
                 id="amount"
                 name="amount"
-                placeholder="Enter amount"
-                min="1"
+                placeholder="Enter amount in USD"
+                min="10"
                 step="0.01"
                 required
             >
@@ -186,9 +217,14 @@
             </button>
 
         </form>
+
     </div>
 
+
+    <!-- INVESTMENT RECORDS -->
+
     <div class="card">
+
         <h2>Recent Demo Investments</h2>
 
         {% if investments %}
@@ -198,13 +234,20 @@
                 <div class="investment">
 
                     <p>
+                        <strong>Investment ID:</strong>
+                        #{{ investment["id"] }}
+                    </p>
+
+                    <p>
                         <strong>Name:</strong>
                         {{ investment["name"] }}
                     </p>
 
                     <p>
-                        <strong>Amount:</strong>
-                        {{ "%.2f"|format(investment["amount"]) }}
+                        <strong>Investment Amount:</strong>
+                        <span class="currency">
+                            ${{ "%.2f"|format(investment["amount"]) }}
+                        </span>
                     </p>
 
                     <p>
@@ -214,12 +257,22 @@
 
                     <p>
                         <strong>Expected Demo Profit:</strong>
-                        {{ "%.2f"|format(investment["expected_profit"]) }}
+                        ${{ "%.2f"|format(investment["expected_profit"]) }}
                     </p>
 
                     <p>
-                        <strong>Demo Total Return:</strong>
-                        {{ "%.2f"|format(investment["total_return"]) }}
+                        <strong>Demo Total:</strong>
+                        ${{ "%.2f"|format(investment["total_return"]) }}
+                    </p>
+
+                    <p>
+                        <strong>Created:</strong>
+                        {{ investment["created_at"] }}
+                    </p>
+
+                    <p>
+                        <strong>Maturity:</strong>
+                        {{ investment["maturity_at"] }}
                     </p>
 
                     <p>
@@ -228,7 +281,7 @@
                     </p>
 
                     <a href="{{ url_for('investment_details', investment_id=investment['id']) }}">
-                        View Details
+                        View Investment Details →
                     </a>
 
                 </div>
@@ -238,18 +291,25 @@
         {% else %}
 
             <p class="empty">
-                No demo investments
-<p>
-    <strong>Investment:</strong>
-    ${{ "%.2f"|format(investment["amount"]) }}
-</p>
+                No demo investments have been created yet.
+            </p>
 
-<p>
-    <strong>Expected Demo Profit:</strong>
-    ${{ "%.2f"|format(investment["expected_profit"]) }}
-</p>
+        {% endif %}
 
-<p>
-    <strong>Demo Total:</strong>
-    ${{ "%.2f"|format(investment["total_return"]) }}
-</p>
+    </div>
+
+
+    <!-- RECORDS LINK -->
+
+    <div class="links">
+
+        <a href="{{ url_for('records') }}">
+            View All Records
+        </a>
+
+    </div>
+
+</div>
+
+</body>
+</html>
